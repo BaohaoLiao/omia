@@ -205,10 +205,9 @@ def main(llm, tokenizer, args):
             "gt": gt,
         })
 
-        if index == 0:
-            print("Question:", question)
-            print("Ground Truth:", gt)
-            print("Prediction:", extracted_answers)
+        print("Question:", question)
+        print("Ground Truth:", gt)
+        print("Prediction:", extracted_answers)
 
     time_use = time.time() - start_time
     result_json = {
