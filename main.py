@@ -12,8 +12,8 @@ from vllm import LLM, SamplingParams
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_dir", default=None, type=str)
-    parser.add_argument("--data_name", default="aimo", type=str)
+    parser.add_argument("--data_dir", default="./data", type=str)
+    parser.add_argument("--data_name", default="aimo2", type=str)
     parser.add_argument("--model_name_or_path", default="Qwen2.5-Math-1.5B-Instruct", type=str)
     parser.add_argument("--draft_model_name_or_path", default="Qwen2.5-Math-1.5B-Instruct", type=str)
     parser.add_argument("--output_dir", default="./output", type=str)
