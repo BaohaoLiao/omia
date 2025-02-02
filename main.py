@@ -23,7 +23,6 @@ def parse_args():
     parser.add_argument("--n_sampling", default=1, type=int)
     parser.add_argument("--top_p", default=1.0, type=float)
     parser.add_argument("--max_tokens_per_call", default=8192, type=int)
-    parser.add_argument("--pipeline_parallel_size", type=int, default=1)
     parser.add_argument("--max_num_seqs", default=16, type=int) 
     parser.add_argument("--speculative_draft_tensor_parallel_size", default=1, type=int)
     parser.add_argument("--enable_log_stats", action="store_true", default=False)
