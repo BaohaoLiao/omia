@@ -63,6 +63,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args) -> list[list[
     sampling_params = SamplingParams(
         temperature=args.temperature,
         #min_p=0.01,
+        top_p=args.top_p,
         skip_special_tokens=True,
         max_tokens=args.max_tokens_per_call,
     )
