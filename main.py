@@ -201,7 +201,6 @@ def main(llm, tokenizer, args):
     for index, row in df.iterrows():
         print("-" * 50)
         print("id:", index)
-        print("Question:", question)
 
         gt = row["answer"]
         question = row["problem"]
@@ -222,6 +221,7 @@ def main(llm, tokenizer, args):
             "pass1_score": str(gt) in extracted_answers,
         })
 
+        print("Question:", question)
         print("Predictions:", extracted_answers)
         print("Prediction:", answer)
         print("Ground Truth:", gt)
