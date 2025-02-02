@@ -197,6 +197,7 @@ def main(llm, tokenizer, args):
 
     samples = []
     preds = []
+    pass1s = []
     start_time = time.time()
     for index, row in df.iterrows():
         gt = row["answer"]
@@ -205,6 +206,7 @@ def main(llm, tokenizer, args):
 
         list_of_messages, extracted_answers, answer = predict_for_question(llm, tokenizer, question, args)
         preds.append(int(answer) == int(gt))
+        pass1s.append(str(gt) in extracted_answers)
 
         samples.append({
             "id": idx,
@@ -213,6 +215,8 @@ def main(llm, tokenizer, args):
             "preds": extracted_answers,
             "pred": answer,
             "gt": gt,
+            "score": int(answer) == int(gt),
+            "pass1_score": str(gt) in extracted_answers,
         })
 
         print("-" * 50)
@@ -226,6 +230,7 @@ def main(llm, tokenizer, args):
         "time_use_in_minutes": f"{int(time_use // 60)}:{int(time_use % 60):02d}",
         "num_samples": len(df),
         "accuracy": sum(preds) / len(preds),
+        "pass1": sum(pass1s) / len(pass1s),
     }
 
     out_file_prefix = f"seed{args.seed}_t{args.temperature}_{args.num_test_sample}"
