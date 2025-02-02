@@ -170,7 +170,7 @@ def setup(args):
             max_model_len=args.max_tokens_per_call, 
             trust_remote_code=True,      
             tensor_parallel_size=len(available_gpus),
-            speculative_draft_tensor_parallel_size=1,
+            speculative_draft_tensor_parallel_size=args.speculative_draft_tensor_parallel_size,
             gpu_memory_utilization=0.95,
             seed=args.seed,
             num_speculative_tokens=args.num_speculative_tokens,
