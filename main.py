@@ -62,7 +62,7 @@ def select_answer(answers):
 def batch_message_generate(llm, tokenizer, list_of_messages, args) -> list[list[dict]]:
     sampling_params = SamplingParams(
         temperature=args.temperature,
-        min_p=0.01,
+        #min_p=0.01,
         skip_special_tokens=True,
         max_tokens=args.max_tokens_per_call,
     )
