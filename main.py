@@ -225,6 +225,7 @@ def main(llm, tokenizer, args):
         print("Predictions:", extracted_answers)
         print("Prediction:", answer)
         print("Ground Truth:", gt)
+        print(f"Accuracy: {sum(preds)}/{len(preds)}")
 
 
     time_use = time.time() - start_time
