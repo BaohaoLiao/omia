@@ -199,6 +199,8 @@ def main(llm, tokenizer, args):
     pass1s = []
     start_time = time.time()
     for index, row in df.iterrows():
+        print("-" * 50)
+
         gt = row["answer"]
         question = row["problem"]
         idx = row["id"]
@@ -218,11 +220,12 @@ def main(llm, tokenizer, args):
             "pass1_score": str(gt) in extracted_answers,
         })
 
-        print("-" * 50)
         print("id:", index)
         print("Question:", question)
+        print("Predictions:", extracted_answers)
+        print("Prediction:", answer)
         print("Ground Truth:", gt)
-        print("Prediction:", extracted_answers)
+
 
     time_use = time.time() - start_time
     result_json = {
