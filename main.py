@@ -237,7 +237,7 @@ def main(llm, tokenizer, args):
     }
 
     out_file_prefix = f"seed{args.seed}_t{args.temperature}_n{args.max_num_seqs}_{args.num_test_sample}"
-    out_file = f"{args.output_dir}/{args.data_name}/{out_file_prefix}.jsonl"
+    out_file = f"./outputs/{args.output_dir}/{args.data_name}/{out_file_prefix}.jsonl"
     os.makedirs(f"{args.output_dir}/{args.data_name}", exist_ok=True)
     save_jsonl(samples, out_file)
     with open(out_file.replace(".jsonl", f"_metrics.json"), "w") as f:
