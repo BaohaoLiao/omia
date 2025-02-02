@@ -15,7 +15,7 @@ def parse_args():
     parser.add_argument("--data_dir", default="./data", type=str)
     parser.add_argument("--data_name", default="aimo2", type=str)
     parser.add_argument("--model_name_or_path", default="Qwen2.5-Math-1.5B-Instruct", type=str)
-    parser.add_argument("--draft_model_name_or_path", default="Qwen2.5-Math-1.5B-Instruct", type=str)
+    parser.add_argument("--draft_model_name_or_path", default=None, type=str)
     parser.add_argument("--output_dir", default="./output", type=str)
     parser.add_argument("--seed", default=2024, type=int)
     parser.add_argument("--num_test_sample", default=-1, type=int)
@@ -152,18 +152,29 @@ def save_jsonl(samples, save_path):
 
 def setup(args):
     available_gpus = os.environ["CUDA_VISIBLE_DEVICES"].split(",")
-    llm = LLM(
-        model=args.model_name_or_path,
-        speculative_model=args.draft_model_name_or_path,
-        max_num_seqs=args.max_num_seqs,   
-        max_model_len=args.max_tokens_per_call, 
-        trust_remote_code=True,      
-        tensor_parallel_size=len(available_gpus),
-        speculative_draft_tensor_parallel_size=1,
-        gpu_memory_utilization=0.95,
-        seed=args.seed,
-        num_speculative_tokens=args.num_speculative_tokens,
-    )
+    if args.draft_model_name_or_path is None:
+        llm = LLM(
+            model=args.model_name_or_path,
+            max_num_seqs=args.max_num_seqs,   
+            max_model_len=args.max_tokens_per_call, 
+            trust_remote_code=True,      
+            tensor_parallel_size=len(available_gpus),
+            gpu_memory_utilization=0.95,
+            seed=args.seed,
+        )
+    else:
+        llm = LLM(
+            model=args.model_name_or_path,
+            speculative_model=args.draft_model_name_or_path,
+            max_num_seqs=args.max_num_seqs,   
+            max_model_len=args.max_tokens_per_call, 
+            trust_remote_code=True,      
+            tensor_parallel_size=len(available_gpus),
+            speculative_draft_tensor_parallel_size=1,
+            gpu_memory_utilization=0.95,
+            seed=args.seed,
+            num_speculative_tokens=args.num_speculative_tokens,
+        )
     tokenizer = llm.get_tokenizer()
     main(llm, tokenizer, args)
 
