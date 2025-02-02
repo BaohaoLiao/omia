@@ -135,7 +135,11 @@ def predict_for_question(llm, tokenizer, question, args):
     list_of_messages = [create_starter_messages(question, index) for index in range(args.max_num_seqs)]
     list_of_messages = batch_message_generate(llm, tokenizer, list_of_messages, args)
     extracted_answers = batch_message_filter(list_of_messages)
-    answer = select_answer(extracted_answers)
+    new_extracted_answers = []
+    for answer in extracted_answers:
+        if answer:
+            new_extracted_answers.append(answer)
+    answer = select_answer(new_extracted_answers)
     return list_of_messages, extracted_answers, answer
 
 
