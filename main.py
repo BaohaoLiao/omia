@@ -175,7 +175,7 @@ def setup(args):
             seed=args.seed,
             num_speculative_tokens=args.num_speculative_tokens,
             disable_log_stats=True,
-            #ngram_prompt_lookup_max=4,
+            ngram_prompt_lookup_max=4,
         )
     tokenizer = llm.get_tokenizer()
     main(llm, tokenizer, args)
