@@ -90,7 +90,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args) -> list[list[
                 messages
             )
         )
-    sort_keys_and_list_of_messages.sort(key=lambda sort_key_and_messages: sort_key_and_messages[0])
+    #sort_keys_and_list_of_messages.sort(key=lambda sort_key_and_messages: sort_key_and_messages[0])
 
     print("Length of generations:", [sort_key for sort_key, _ in sort_keys_and_list_of_messages])
     list_of_messages = [messages for _, messages in sort_keys_and_list_of_messages]
