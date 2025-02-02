@@ -20,7 +20,6 @@ def parse_args():
     parser.add_argument("--seed", default=2024, type=int)
     parser.add_argument("--num_test_sample", default=-1, type=int)
     parser.add_argument("--temperature", default=1.0, type=float)
-    parser.add_argument("--n_sampling", default=1, type=int)
     parser.add_argument("--top_p", default=1.0, type=float)
     parser.add_argument("--max_tokens_per_call", default=8192, type=int)
     parser.add_argument("--max_num_seqs", default=16, type=int) 
@@ -233,7 +232,7 @@ def main(llm, tokenizer, args):
         "pass1": sum(pass1s) / len(pass1s),
     }
 
-    out_file_prefix = f"seed{args.seed}_t{args.temperature}_{args.num_test_sample}"
+    out_file_prefix = f"seed{args.seed}_t{args.temperature}_n{args.max_num_seqs}_{args.num_test_sample}"
     out_file = f"{args.output_dir}/{args.data_name}/{out_file_prefix}.jsonl"
     os.makedirs(f"{args.output_dir}/{args.data_name}", exist_ok=True)
     save_jsonl(samples, out_file)
