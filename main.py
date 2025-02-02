@@ -174,7 +174,7 @@ def setup(args):
             gpu_memory_utilization=0.95,
             seed=args.seed,
             num_speculative_tokens=args.num_speculative_tokens,
-            disable_log_stats=False,
+            disable_log_stats=True,
             #ngram_prompt_lookup_max=4,
         )
     tokenizer = llm.get_tokenizer()
