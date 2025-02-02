@@ -168,7 +168,7 @@ def setup(args):
 
 
 def main(llm, tokenizer, args):
-    df = pd.read_csv(os.path.join(args.data_dir, os.data_name, "reference.csv"))
+    df = pd.read_csv(os.path.join(args.data_dir, args.data_name, "reference.csv"))
     if args.num_test_sample != -1:
         assert args.num_test_sample <= len(df)
         df = df[:args.num_test_sample]
