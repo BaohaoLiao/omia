@@ -92,7 +92,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args) -> list[list[
         )
     sort_keys_and_list_of_messages.sort(key=lambda sort_key_and_messages: sort_key_and_messages[0])
 
-    print([sort_key for sort_key, _ in sort_keys_and_list_of_messages])
+    print("Length of generations:", [sort_key for sort_key, _ in sort_keys_and_list_of_messages])
     list_of_messages = [messages for _, messages in sort_keys_and_list_of_messages]
     return list_of_messages
 
@@ -200,6 +200,8 @@ def main(llm, tokenizer, args):
     start_time = time.time()
     for index, row in df.iterrows():
         print("-" * 50)
+        print("id:", index)
+        print("Question:", question)
 
         gt = row["answer"]
         question = row["problem"]
@@ -220,8 +222,6 @@ def main(llm, tokenizer, args):
             "pass1_score": str(gt) in extracted_answers,
         })
 
-        print("id:", index)
-        print("Question:", question)
         print("Predictions:", extracted_answers)
         print("Prediction:", answer)
         print("Ground Truth:", gt)
