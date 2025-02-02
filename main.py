@@ -167,6 +167,10 @@ def setup(args):
             seed=args.seed,
         )
     else:
+        ngram_prompt_lookup_max = None
+        if args.draft_model_name_or_path == "[ngram]":
+            ngram_prompt_lookup_max = 4
+
         llm = LLM(
             model=args.model_name_or_path,
             speculative_model=args.draft_model_name_or_path,
@@ -179,7 +183,7 @@ def setup(args):
             seed=args.seed,
             num_speculative_tokens=args.num_speculative_tokens,
             disable_log_stats=True,
-            ngram_prompt_lookup_max=4,
+            ngram_prompt_lookup_max=ngram_prompt_lookup_max,
         )
     tokenizer = llm.get_tokenizer()
     main(llm, tokenizer, args)
