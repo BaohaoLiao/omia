@@ -206,6 +206,7 @@ def main(llm, tokenizer, args):
         })
 
         print("-" * 50)
+        print("id:", index)
         print("Question:", question)
         print("Ground Truth:", gt)
         print("Prediction:", extracted_answers)
