@@ -62,6 +62,8 @@ def select_answer(answers, lengths):
     # Find the maximum frequency
     max_freq = max(freq_dict.values())
     
+    print(answers, lengths)
+    print(freq_dict, valid_indices)
     # Get all answers with maximum frequency
     most_common = [ans for ans, freq in freq_dict.items() if freq == max_freq]
     if len(most_common) == 1:
