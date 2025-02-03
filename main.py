@@ -152,7 +152,7 @@ def create_starter_messages(question, index):
 def predict_for_question(llm, tokenizer, question, args):
     list_of_messages = [create_starter_messages(question, index) for index in range(args.max_num_seqs)]
     list_of_lengths_and_messages = batch_message_generate(llm, tokenizer, list_of_messages, args)
-    extracted_answers = batch_message_filter([messages[-1]["content"] for _, messages in list_of_lengths_and_messages])
+    extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages])
     lengths = [length for length, _ in list_of_lengths_and_messages]
     """
     new_extracted_answers = []
@@ -161,7 +161,7 @@ def predict_for_question(llm, tokenizer, question, args):
             new_extracted_answers.append(answer)
     """
     answer, length = select_answer(extracted_answers, lengths)
-    return [messages["content"][-1] for _, messages in list_of_lengths_and_messages], extracted_answers, lengths, answer, length
+    return [messages[-1]["content"] for _, messages in list_of_lengths_and_messages], extracted_answers, lengths, answer, length
 
 
 def save_jsonl(samples, save_path):
