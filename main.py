@@ -245,7 +245,7 @@ def main(llm, tokenizer, args):
             "length": length,
             "gt": gt,
             "score": int(answer) == int(gt),
-            "pass1_score": str(gt) in extracted_answers,
+            "pass@1_score": str(gt) in extracted_answers,
         })
 
         print("Question:", question)
@@ -260,7 +260,7 @@ def main(llm, tokenizer, args):
         "time_use_in_minutes": f"{int(time_use // 60)}:{int(time_use % 60):02d}",
         "num_samples": len(df),
         "accuracy": sum(preds) / len(preds),
-        "pass1": sum(pass1s) / len(pass1s),
+        "pass@1": sum(pass1s) / len(pass1s),
     }
 
     out_file_prefix = f"seed{args.seed}_t{args.temperature}_n{args.max_num_seqs}_{args.num_test_sample}"
