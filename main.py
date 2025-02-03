@@ -249,6 +249,7 @@ def main(llm, tokenizer, args):
 
         print("Question:", question)
         print("Predictions:", extracted_answers)
+        print("Lengths:", lengths)
         print(f"Prediction: {answer} with {length} generated tokens")
         print("Ground Truth:", gt)
         print(f"Accuracy: {sum(preds)}/{len(preds)}")
