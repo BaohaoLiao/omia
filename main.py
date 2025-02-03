@@ -5,7 +5,7 @@ import time
 import random
 import argparse
 import pandas as pd
-from collections import Counter
+from collections import Counter, defaultdict
 
 from vllm import LLM, SamplingParams
 
@@ -44,21 +44,43 @@ def extract_boxed_text(text):
     return ""
 
 
-def select_answer(answers):
-    counter = Counter()
-    for answer in answers:
-        try:
-            if int(answer) == float(answer):
-                counter[int(answer)] += 1 + random.random() / 1_000
-        except:
-            pass
-    if not counter:
+def select_answer(answers, lengths):
+    freq_dict = defaultdict(int)
+    valid_indices = []  # Keep track of indices where answer is not None
+    for i, answer in enumerate(answers):
+        if answer:
+            try:
+                if int(answer) == float(answer):
+                    freq_dict[int(answer)] += 1
+                    valid_indices.append(i)
+            except:
+                pass
+
+    if len(freq_dict) == 0:
         return 210
-    _, answer = sorted([(v,k) for k,v in counter.items()], reverse=True)[0]
-    return answer%1000
+    
+    # Find the maximum frequency
+    max_freq = max(freq_dict.values())
+    
+    # Get all answers with maximum frequency
+    most_common = [ans for ans, freq in freq_dict.items() if freq == max_freq]
+    if len(most_common) == 1:
+        return most_common[0]
+    
+    # If there are ties, calculate average length for each answer
+    avg_lengths = {}
+    for ans in most_common:
+        # Get all indices where this answer appears (excluding None values)
+        indices = [i for i in valid_indices if answers[i] == ans]
+        # Calculate average length
+        avg_length = sum(lengths[i] for i in indices) / len(indices)
+        avg_lengths[ans] = avg_length
+    
+    # Return the answer with minimum average length
+    return min(avg_lengths.items(), key=lambda x: x[1])[0] % 1000, min(avg_lengths.items(), key=lambda x: x[1])[1]
 
 
-def batch_message_generate(llm, tokenizer, list_of_messages, args) -> list[list[dict]]:
+def batch_message_generate(llm, tokenizer, list_of_messages, args):
     sampling_params = SamplingParams(
         temperature=args.temperature,
         min_p=0.01,
@@ -81,20 +103,17 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args) -> list[list[
         sampling_params=sampling_params,
     )
 
-    sort_keys_and_list_of_messages = []
+    list_of_lengths_and_messages = []
     for messages, single_request_output in zip(list_of_messages, request_output):
         messages.append({'role': 'assistant', 'content': single_request_output.outputs[0].text})
-        sort_keys_and_list_of_messages.append(
+        list_of_lengths_and_messages.append(
             (
                 len(single_request_output.outputs[0].token_ids),
                 messages
             )
         )
-    #sort_keys_and_list_of_messages.sort(key=lambda sort_key_and_messages: sort_key_and_messages[0])
 
-    print("Length of generations:", [sort_key for sort_key, _ in sort_keys_and_list_of_messages])
-    list_of_messages = [messages for _, messages in sort_keys_and_list_of_messages]
-    return list_of_messages
+    return list_of_lengths_and_messages
 
 
 def batch_message_filter(list_of_messages):
@@ -132,14 +151,17 @@ def create_starter_messages(question, index):
 
 def predict_for_question(llm, tokenizer, question, args):
     list_of_messages = [create_starter_messages(question, index) for index in range(args.max_num_seqs)]
-    list_of_messages = batch_message_generate(llm, tokenizer, list_of_messages, args)
-    extracted_answers = batch_message_filter(list_of_messages)
+    list_of_lengths_and_messages = batch_message_generate(llm, tokenizer, list_of_messages, args)
+    extracted_answers = batch_message_filter([messages["content"][-1] for _, messages in list_of_lengths_and_messages])
+    lengths = [length for length, _ in list_of_lengths_and_messages]
+    """
     new_extracted_answers = []
     for answer in extracted_answers:
         if answer:
             new_extracted_answers.append(answer)
-    answer = select_answer(new_extracted_answers)
-    return list_of_messages, extracted_answers, answer
+    """
+    answer, length = select_answer(extracted_answers, lengths)
+    return [messages["content"][-1] for _, messages in list_of_lengths_and_messages], extracted_answers, lengths, answer, length
 
 
 def save_jsonl(samples, save_path):
@@ -206,7 +228,7 @@ def main(llm, tokenizer, args):
         question = row["problem"]
         idx = row["id"]
 
-        list_of_messages, extracted_answers, answer = predict_for_question(llm, tokenizer, question, args)
+        list_of_messages, extracted_answers, lengths, answer, length = predict_for_question(llm, tokenizer, question, args)
         preds.append(int(answer) == int(gt))
         pass1s.append(str(gt) in extracted_answers)
 
@@ -215,7 +237,9 @@ def main(llm, tokenizer, args):
             "question": question,
             "completion": list_of_messages,
             "preds": extracted_answers,
+            "lengths": lengths,
             "pred": answer,
+            "length": length,
             "gt": gt,
             "score": int(answer) == int(gt),
             "pass1_score": str(gt) in extracted_answers,
@@ -223,7 +247,7 @@ def main(llm, tokenizer, args):
 
         print("Question:", question)
         print("Predictions:", extracted_answers)
-        print("Prediction:", answer)
+        print(f"Prediction: {answer} with {length} generated tokens")
         print("Ground Truth:", gt)
         print(f"Accuracy: {sum(preds)}/{len(preds)}")
 
