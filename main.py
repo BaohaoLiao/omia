@@ -67,7 +67,7 @@ def select_answer(answers, lengths):
     if len(most_common) == 1:
         indices = [i for i in valid_indices if answers[i] == str(most_common[0])]
         avg_length = sum([lengths[i] for i in indices]) / len(indices)
-        return most_common[0], avg_length
+        return most_common[0] % 1000, avg_length
     
     # If there are ties, calculate average length for each answer
     avg_lengths = {}
