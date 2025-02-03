@@ -65,8 +65,9 @@ def select_answer(answers, lengths):
     # Get all answers with maximum frequency
     most_common = [ans for ans, freq in freq_dict.items() if freq == max_freq]
     if len(most_common) == 1:
+        print(most_common, indices)
         indices = [i for i in valid_indices if answers[i] == most_common[0]]
-        avg_length = sum(lengths[i] for i in indices) / len(indices)
+        avg_length = sum([lengths[i] for i in indices]) / len(indices)
         return most_common[0], avg_length
     
     # If there are ties, calculate average length for each answer
@@ -75,7 +76,7 @@ def select_answer(answers, lengths):
         # Get all indices where this answer appears (excluding None values)
         indices = [i for i in valid_indices if answers[i] == ans]
         # Calculate average length
-        avg_length = sum(lengths[i] for i in indices) / len(indices)
+        avg_length = sum([lengths[i] for i in indices]) / len(indices)
         avg_lengths[ans] = avg_length
     
     # Return the answer with minimum average length
