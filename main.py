@@ -57,7 +57,7 @@ def select_answer(answers, lengths):
                 pass
 
     if len(freq_dict) == 0:
-        return 210
+        return 210, 0
     
     # Find the maximum frequency
     max_freq = max(freq_dict.values())
@@ -65,7 +65,9 @@ def select_answer(answers, lengths):
     # Get all answers with maximum frequency
     most_common = [ans for ans, freq in freq_dict.items() if freq == max_freq]
     if len(most_common) == 1:
-        return most_common[0]
+        indices = [i for i in valid_indices if answers[i] == most_common[0]]
+        avg_length = sum(lengths[i] for i in indices) / len(indices)
+        return most_common[0], avg_length
     
     # If there are ties, calculate average length for each answer
     avg_lengths = {}
