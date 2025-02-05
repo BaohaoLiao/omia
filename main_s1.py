@@ -82,12 +82,20 @@ def select_answer(answers, lengths):
     return min(avg_lengths.items(), key=lambda x: x[1])[0] % 1000, min(avg_lengths.items(), key=lambda x: x[1])[1]
 
 
+def batch_message_filter(list_of_messages):
+    extracted_answers = []
+    for messages in list_of_messages:
+        answer = extract_boxed_text(messages[-1]['content'])
+        extracted_answers.append(answer)
+    return extracted_answers
+
+
 def batch_message_generate(llm, tokenizer, list_of_messages, args):
     sampling_params = SamplingParams(
         temperature=args.temperature,
         min_p=0.01,
         top_p=args.top_p,
-        skip_special_tokens=True,
+        skip_special_tokens=False,
         max_tokens=args.max_tokens_per_call,
     )
 
@@ -104,6 +112,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
         prompts=list_of_texts,
         sampling_params=sampling_params,
     )
+    request_output = sorted(request_output, key=lambda x: int(x.request_id))
 
     list_of_lengths_and_messages = []
     for messages, single_request_output in zip(list_of_messages, request_output):
@@ -115,15 +124,51 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
             )
         )
 
+    # Obtain answer
+    extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages])
+    print("First predictions:", extracted_answers)
+
+    good_responses = [] # list of [index, response, length, answer]
+    bad_responses = []
+    for idx, (prompt, response, answer) in enumerate(zip(list_of_texts, request_output, extracted_answers)):
+        if answer:
+            good_responses.append((idx, response.outputs[0].text, list_of_lengths_and_messages[idx][0], answer))
+        else:
+            if "</think>" in response.outputs[0].text:
+                bad_responses.append((idx, prompt, response.outputs[0].text + " The Final answer is", list_of_lengths_and_messages[idx][0]))
+            else:
+                bad_responses.append((idx, prompt, response.outputs[0].text + "</think>", list_of_lengths_and_messages[idx][0]))
+
+    # Force to generate an answer
+    if bad_responses:
+        new_list_of_texts = [prompt + response for _, prompt, response, _ in bad_responses]
+        new_sampling_params = SamplingParams(
+            temperature=args.temperature,
+            min_p=0.01,
+            top_p=args.top_p,
+            skip_special_tokens=False,
+            max_tokens=1024,
+        )
+        new_request_output = llm.generate(
+            prompts=new_list_of_texts,
+            sampling_params=new_sampling_params,
+        )
+        new_request_output = sorted(new_request_output, key=lambda x: int(x.request_id))
+        new_list_of_lengths_and_messages = []
+        for idx, prompt, prev_response, prev_len in bad_responses:
+            new_list_of_lengths_and_messages.append(
+                (
+                    prev_len + len(single_request_output.outputs[0].token_ids),
+                    list_of_messages[idx].append({'role': 'assistant', 'content': prev_response + single_request_output.outputs[0].text})
+                )
+            )
+
+        # merge
+        for i, (idx, _, _, _) in enumerate(bad_responses):
+            list_of_lengths_and_messages[idx] = new_list_of_lengths_and_messages[i]
+
     return list_of_lengths_and_messages
 
-
-def batch_message_filter(list_of_messages):
-    extracted_answers = []
-    for messages in list_of_messages:
-        answer = extract_boxed_text(messages[-1]['content'])
-        extracted_answers.append(answer)
-    return extracted_answers
 
 
 def create_starter_messages(question, index):
@@ -182,6 +227,7 @@ def setup(args):
             tensor_parallel_size=len(available_gpus),
             gpu_memory_utilization=0.95,
             seed=args.seed,
+            enable_prefix_caching=True,
         )
     else:
         ngram_prompt_lookup_max = None
