@@ -181,9 +181,10 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
 
 
 
-def create_starter_messages(question, index):
+def create_starter_messages(question, index, args):
     options = []
-    for _ in range(13):
+    args.max_num_seqs - 3
+    for _ in range(min(13, args.max_num_seqs - 3)):
         options.append(
             [
                 {"role": "system", "content": "You are a the most powerful math expert. Please solve the problems with deep resoning. You are careful and always recheck your conduction. You will never give answer directly until you have enough confidence. You should think step-by-step. Return final answer within \\boxed{}, after taking modulo 1000."},
@@ -207,7 +208,7 @@ def create_starter_messages(question, index):
 
 
 def predict_for_question(llm, tokenizer, question, args):
-    list_of_messages = [create_starter_messages(question, index) for index in range(args.max_num_seqs)]
+    list_of_messages = [create_starter_messages(question, index, args) for index in range(args.max_num_seqs)]
     list_of_lengths_and_messages = batch_message_generate(llm, tokenizer, list_of_messages, args)
     extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages])
     lengths = [length for length, _ in list_of_lengths_and_messages]
