@@ -163,10 +163,14 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
                 )
             )
 
+        print("Before:", [length for length, _ in list_of_lengths_and_messages])
+
         # merge
         for i, (idx, _, _, _) in enumerate(bad_responses):
             list_of_lengths_and_messages[idx] = new_list_of_lengths_and_messages[i]
-            
+        
+        print("After:", [length for length, _ in list_of_lengths_and_messages])
+
     return list_of_lengths_and_messages
 
 
