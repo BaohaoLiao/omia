@@ -226,7 +226,7 @@ def setup(args):
         llm = LLM(
             model=args.model_name_or_path,
             max_num_seqs=args.max_num_seqs,   
-            max_model_len=args.max_tokens_per_call, 
+            max_model_len=32000, 
             trust_remote_code=True,      
             tensor_parallel_size=len(available_gpus),
             gpu_memory_utilization=0.95,
