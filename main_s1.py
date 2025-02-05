@@ -136,7 +136,8 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
             good_responses.append((idx, response.outputs[0].text, list_of_lengths_and_messages[idx][0], answer))
         else:
             #if "</think>" in response.outputs[0].text:
-            bad_responses.append((idx, prompt, response.outputs[0].text + "\n\nThus, the final answer is\n\n", list_of_lengths_and_messages[idx][0]))
+            #bad_responses.append((idx, prompt, response.outputs[0].text + "\n\nThus, the final answer is\n\n", list_of_lengths_and_messages[idx][0]))
+            bad_responses.append((idx, prompt, response.outputs[0].text + "\n\n**Final Answer**\n\n", list_of_lengths_and_messages[idx][0]))
             #else:
             #    bad_responses.append((idx, prompt, response.outputs[0].text + "\n</think>\n\n", list_of_lengths_and_messages[idx][0]))
 
