@@ -26,6 +26,7 @@ def parse_args():
     parser.add_argument("--speculative_draft_tensor_parallel_size", default=1, type=int)
     parser.add_argument("--enable_log_stats", action="store_true", default=False)
     parser.add_argument("--num_speculative_tokens", default=5, type=int)
+    parser.add_argument("--max_model_len", default=16384, type=int)
     args = parser.parse_args()
     args.top_p = (
         1 if args.temperature == 0 else args.top_p
@@ -226,7 +227,7 @@ def setup(args):
         llm = LLM(
             model=args.model_name_or_path,
             max_num_seqs=args.max_num_seqs,   
-            max_model_len=32000, 
+            max_model_len=args.max_model_len, 
             trust_remote_code=True,      
             tensor_parallel_size=len(available_gpus),
             gpu_memory_utilization=0.95,
