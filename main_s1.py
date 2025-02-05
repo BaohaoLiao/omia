@@ -155,20 +155,18 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
         )
         new_request_output = sorted(new_request_output, key=lambda x: int(x.request_id))
         new_list_of_lengths_and_messages = []
-        for idx, prompt, prev_response, prev_len in bad_responses:
+        for i, (idx, prompt, prev_response, prev_len) in enumerate(bad_responses):
             new_list_of_lengths_and_messages.append(
                 (
-                    prev_len + len(single_request_output.outputs[0].token_ids),
-                    list_of_messages[idx].append({'role': 'assistant', 'content': prev_response + single_request_output.outputs[0].text})
+                    prev_len + len(new_request_output[i].outputs[0].token_ids),
+                    list_of_messages[idx].append({'role': 'assistant', 'content': prev_response + new_request_output[i].outputs[0].text})
                 )
             )
 
         # merge
         for i, (idx, _, _, _) in enumerate(bad_responses):
             list_of_lengths_and_messages[idx] = new_list_of_lengths_and_messages[i]
-
-        print("debug", new_list_of_lengths_and_messages[0])
-        print("debug", list_of_lengths_and_messages[0])
+            
     return list_of_lengths_and_messages
 
 
