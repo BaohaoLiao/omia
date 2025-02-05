@@ -135,7 +135,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
             good_responses.append((idx, response.outputs[0].text, list_of_lengths_and_messages[idx][0], answer))
         else:
             if "</think>" in response.outputs[0].text:
-                bad_responses.append((idx, prompt, response.outputs[0].text + " The Final answer is", list_of_lengths_and_messages[idx][0]))
+                bad_responses.append((idx, prompt, response.outputs[0].text + " The final answer is", list_of_lengths_and_messages[idx][0]))
             else:
                 bad_responses.append((idx, prompt, response.outputs[0].text + "</think>", list_of_lengths_and_messages[idx][0]))
 
@@ -159,7 +159,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
             new_list_of_lengths_and_messages.append(
                 (
                     prev_len + len(new_request_output[i].outputs[0].token_ids),
-                    list_of_messages[idx].append({'role': 'assistant', 'content': prev_response + new_request_output[i].outputs[0].text})
+                    list_of_messages[idx] + [{'role': 'assistant', 'content': prev_response + new_request_output[i].outputs[0].text}]
                 )
             )
 
@@ -170,8 +170,6 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
             list_of_lengths_and_messages[idx] = new_list_of_lengths_and_messages[i]
         
         print("After:", [length for length, _ in list_of_lengths_and_messages])
-        print(list_of_lengths_and_messages[0])
-        print(list_of_lengths_and_messages[5])
 
     return list_of_lengths_and_messages
 
