@@ -137,9 +137,9 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
         else:
             #if "</think>" in response.outputs[0].text:
             #bad_responses.append((idx, prompt, response.outputs[0].text + "\n\nThus, the final answer is\n\n", list_of_lengths_and_messages[idx][0]))
-            bad_responses.append((idx, prompt, response.outputs[0].text + "\n\n**Final Answer**\n\n", list_of_lengths_and_messages[idx][0]))
+            #bad_responses.append((idx, prompt, response.outputs[0].text + "\n\n**Final Answer**\n\n", list_of_lengths_and_messages[idx][0]))
             #else:
-            #    bad_responses.append((idx, prompt, response.outputs[0].text + "\n</think>\n\n", list_of_lengths_and_messages[idx][0]))
+            bad_responses.append((idx, prompt, response.outputs[0].text + "\n</think>\n\n", list_of_lengths_and_messages[idx][0]))
 
     # Force to generate an answer
     if bad_responses:
@@ -165,9 +165,8 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
                 )
             )
 
-            if prev_len + len(new_request_output[i].outputs[0].token_ids) < 13000:
-                print("Original:", [prev_response[-200:]])
-                print("New:", [new_request_output[i].outputs[0].text])
+            print("Original:", [prev_response[-200:]])
+            print("New:", [new_request_output[i].outputs[0].text])
 
 
         print("Before:", [length for length, _ in list_of_lengths_and_messages])
