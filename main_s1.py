@@ -170,6 +170,8 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
             list_of_lengths_and_messages[idx] = new_list_of_lengths_and_messages[i]
         
         print("After:", [length for length, _ in list_of_lengths_and_messages])
+        print(list_of_lengths_and_messages[0])
+        print(list_of_lengths_and_messages[5])
 
     return list_of_lengths_and_messages
 
