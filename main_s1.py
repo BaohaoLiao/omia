@@ -139,7 +139,10 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
             #bad_responses.append((idx, prompt, response.outputs[0].text + "\n\nThus, the final answer is\n\n", list_of_lengths_and_messages[idx][0]))
             #bad_responses.append((idx, prompt, response.outputs[0].text + "\n\n**Final Answer**\n\n", list_of_lengths_and_messages[idx][0]))
             #else:
-            bad_responses.append((idx, prompt, response.outputs[0].text + "\n</think>\n\n", list_of_lengths_and_messages[idx][0]))
+            if "7B" in args.model_name_or_path:
+                bad_responses.append((idx, prompt, response.outputs[0].text + "\n</think>\n\n**Final Answer**\n\n", list_of_lengths_and_messages[idx][0]))
+            else:
+                bad_responses.append((idx, prompt, response.outputs[0].text + "\n</think>\n\n", list_of_lengths_and_messages[idx][0]))
 
     # Force to generate an answer
     if bad_responses:
