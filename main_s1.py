@@ -164,7 +164,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
                 )
             )
 
-            if i == 0:
+            if prev_len + len(new_request_output[i].outputs[0].token_ids) < 13000:
                 print("Original:", prev_response[-200:])
                 print("New:", new_request_output[i].outputs[0].text)
 
