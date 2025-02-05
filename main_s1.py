@@ -116,7 +116,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
     request_output = sorted(request_output, key=lambda x: int(x.request_id))
 
     list_of_lengths_and_messages = []
-    for messages, single_request_output in zip(list_of_messages, request_output):
+    for messages, single_request_output in zip(list_of_messages.copy(), request_output):
         messages.append({'role': 'assistant', 'content': single_request_output.outputs[0].text})
         list_of_lengths_and_messages.append(
             (
