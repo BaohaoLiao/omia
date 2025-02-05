@@ -167,6 +167,8 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
         for i, (idx, _, _, _) in enumerate(bad_responses):
             list_of_lengths_and_messages[idx] = new_list_of_lengths_and_messages[i]
 
+        print("debug", new_list_of_lengths_and_messages[0])
+        print("debug", list_of_lengths_and_messages[0])
     return list_of_lengths_and_messages
 
 
