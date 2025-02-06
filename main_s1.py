@@ -185,8 +185,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
 
 def create_starter_messages(question, index, args):
     options = []
-    args.max_num_seqs - 3
-    for _ in range(min(13, args.max_num_seqs - 3)):
+    for _ in range(min(9, args.max_num_seqs - 3)):
         options.append(
             [
                 {"role": "system", "content": "You are a the most powerful math expert. Please solve the problems with deep resoning. You are careful and always recheck your conduction. You will never give answer directly until you have enough confidence. You should think step-by-step. Return final answer within \\boxed{}, after taking modulo 1000."},
