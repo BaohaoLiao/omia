@@ -60,7 +60,10 @@ def extract_boxed_text(text, use_math_verify=False):
                 extraction_mode="first_match",
             )
         if answer_parsed:
-            return answer_parsed[1]
+            if len(answer_parsed) >=2:
+                return answer_parsed[1]
+            else:
+                return answer_parsed[0]
         else:
             return ""
     else:
