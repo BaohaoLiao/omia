@@ -28,6 +28,7 @@ def parse_args():
     parser.add_argument("--num_speculative_tokens", default=5, type=int)
     parser.add_argument("--max_model_len", default=16384, type=int)
     parser.add_argument("--s1", action='store_true', default=False)
+    parser.add_argument("--use_math_varify", action='store_true', default=False)
     args = parser.parse_args()
     args.top_p = (
         1 if args.temperature == 0 else args.top_p
@@ -35,15 +36,42 @@ def parse_args():
     return args
 
 
-def extract_boxed_text(text):
-    pattern = r'oxed{(.*?)}'
-    matches = re.findall(pattern, text)
-    if not matches:
+def extract_boxed_text(text, use_math_verify=False):
+    if use_math_verify:
+        from math_verify import LatexExtractionConfig, parse, verify
+        from latex2sympy2_extended import NormalizationConfig
+        answer_parsed = parse(
+                text,
+                extraction_config=[
+                    LatexExtractionConfig(
+                        normalization_config=NormalizationConfig(
+                            nits=False,
+                            malformed_operators=False,
+                            basic_latex=True,
+                            equations=True,
+                            boxed="all",
+                            units=True,
+                        ),
+                        # Ensures that boxed is tried first
+                        boxed_match_priority=0,
+                        try_extract_without_anchor=False,
+                    )
+                ],
+                extraction_mode="first_match",
+            )
+        if answer_parsed:
+            return answer_parsed[1]
+        else:
+            return ""
+    else:
+        pattern = r'oxed{(.*?)}'
+        matches = re.findall(pattern, text)
+        if not matches:
+            return ""
+        for match in matches[::-1]:
+            if match != "":
+                return match
         return ""
-    for match in matches[::-1]:
-        if match != "":
-            return match
-    return ""
 
 
 def select_answer(answers, lengths):
@@ -84,10 +112,10 @@ def select_answer(answers, lengths):
     return min(avg_lengths.items(), key=lambda x: x[1])[0] % 1000, min(avg_lengths.items(), key=lambda x: x[1])[1]
 
 
-def batch_message_filter(list_of_messages):
+def batch_message_filter(list_of_messages, use_math_verify):
     extracted_answers = []
     for messages in list_of_messages:
-        answer = extract_boxed_text(messages[-1]['content'])
+        answer = extract_boxed_text(messages[-1]['content'], use_math_verify=use_math_verify)
         extracted_answers.append(answer)
     return extracted_answers
 
@@ -130,7 +158,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
 
     if args.s1:
         # Obtain answer
-        extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages])
+        extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages], use_math_verify=args.use_math_varify)
         print("First predictions:", extracted_answers)
 
         good_responses = [] # list of [index, response, length, answer]
@@ -217,7 +245,7 @@ def create_starter_messages(question, index, args):
 def predict_for_question(llm, tokenizer, question, args):
     list_of_messages = [create_starter_messages(question, index, args) for index in range(args.max_num_seqs)]
     list_of_lengths_and_messages = batch_message_generate(llm, tokenizer, list_of_messages, args)
-    extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages])
+    extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages], use_math_verify=args.use_math_varify)
     lengths = [length for length, _ in list_of_lengths_and_messages]
     answer, length = select_answer(extracted_answers, lengths)
     return [messages[-1]["content"] for _, messages in list_of_lengths_and_messages], extracted_answers, lengths, answer, length
