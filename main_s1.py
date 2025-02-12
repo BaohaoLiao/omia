@@ -290,8 +290,6 @@ def main(llm, tokenizer, args):
         preds.append(int(answer) == int(gt))
         pass1s.append(sum([int(gt) == int(ans) for ans in extracted_answers])/len(extracted_answers))
 
-        pass1s.append(str(gt) in extracted_answers)
-
         samples.append({
             "id": idx,
             "question": question,
