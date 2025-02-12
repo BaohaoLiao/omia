@@ -341,8 +341,10 @@ def main(llm, tokenizer, args):
         print("Lengths:", lengths)
         print(f"Prediction: {answer} with {length} generated tokens")
         print("Ground Truth:", gt)
-        print(f"Accuracy: {sum(preds)/len(preds)}")
-        print(f"Pass@1: {sum(pass1s)/len(pass1s)}")
+        print(f"Accuracy: {preds[-1]}")
+        print(f"Pass@1: {pass1s[-1]}")
+        print(f"Overall Accuracy: {sum(preds)/len(preds)}")
+        print(f"Overall Pass@1: {sum(pass1s)/len(pass1s)}")
 
 
     time_use = time.time() - start_time
