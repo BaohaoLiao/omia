@@ -288,7 +288,7 @@ def main(llm, tokenizer, args):
 
         list_of_messages, extracted_answers, lengths, answer, length = predict_for_question(llm, tokenizer, question, args)
         preds.append(int(answer) == int(gt))
-        pass1s.append(sum([gt == ans for ans in extracted_answers])/len(extracted_answers))
+        pass1s.append(sum([str(gt) == str(ans) for ans in extracted_answers])/len(extracted_answers))
 
         samples.append({
             "id": idx,
