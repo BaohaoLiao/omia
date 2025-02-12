@@ -105,7 +105,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
             conversation=messages,
             tokenize=False,
             add_generation_prompt=True
-        )
+        ) + "<think>\n"
         for messages in list_of_messages
     ]
 
