@@ -187,13 +187,14 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
 
 def create_starter_messages(question, index, args):
     options = []
-    for _ in range(min(9, args.max_num_seqs - 3)):
+    for _ in range(args.max_num_seqs):
         options.append(
             [
                 {"role": "system", "content": "You are a the most powerful math expert. Please solve the problems with deep resoning. You are careful and always recheck your conduction. You will never give answer directly until you have enough confidence. You should think step-by-step. Return final answer within \\boxed{}, after taking modulo 1000."},
                 {"role": "user", "content": question},
             ]
         )
+    """
     for _ in range(2):    
         options.append(
             [
@@ -207,6 +208,7 @@ def create_starter_messages(question, index, args):
             {"role": "user", "content": question},
         ],
     )
+    """
     return options[index%len(options)]
 
 
@@ -286,6 +288,8 @@ def main(llm, tokenizer, args):
 
         list_of_messages, extracted_answers, lengths, answer, length = predict_for_question(llm, tokenizer, question, args)
         preds.append(int(answer) == int(gt))
+        pass1s.append(sum([int(gt) == int(ans) for ans in extracted_answers])/len(extracted_answers))
+
         pass1s.append(str(gt) in extracted_answers)
 
         samples.append({
@@ -297,8 +301,8 @@ def main(llm, tokenizer, args):
             "pred": answer,
             "length": length,
             "gt": gt,
-            "score": int(answer) == int(gt),
-            "pass@1_score": str(gt) in extracted_answers,
+            "score": preds[-1],
+            "pass@1_score": pass1s[-1],
         })
 
         print("Question:", question)
