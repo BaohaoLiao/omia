@@ -27,6 +27,7 @@ def parse_args():
     parser.add_argument("--enable_log_stats", action="store_true", default=False)
     parser.add_argument("--num_speculative_tokens", default=5, type=int)
     parser.add_argument("--max_model_len", default=16384, type=int)
+    parser.add_argument("--s1", action='store_true', default=False)
     args = parser.parse_args()
     args.top_p = (
         1 if args.temperature == 0 else args.top_p
@@ -127,59 +128,60 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
             )
         )
 
-    # Obtain answer
-    extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages])
-    print("First predictions:", extracted_answers)
+    if args.s1:
+        # Obtain answer
+        extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages])
+        print("First predictions:", extracted_answers)
 
-    good_responses = [] # list of [index, response, length, answer]
-    bad_responses = []
-    for idx, (prompt, response, answer) in enumerate(zip(list_of_texts, request_output, extracted_answers)):
-        if answer:
-            good_responses.append((idx, response.outputs[0].text, list_of_lengths_and_messages[idx][0], answer))
-        else:
-            #if "</think>" in response.outputs[0].text:
-            #bad_responses.append((idx, prompt, response.outputs[0].text + "\n\nThus, the final answer is\n\n", list_of_lengths_and_messages[idx][0]))
-            #bad_responses.append((idx, prompt, response.outputs[0].text + "\n\n**Final Answer**\n\n", list_of_lengths_and_messages[idx][0]))
-            #else:
-            if "7B" in args.model_name_or_path:
-                bad_responses.append((idx, prompt, response.outputs[0].text + "\n</think>\n\n**Final Answer**\n\n", list_of_lengths_and_messages[idx][0]))
+        good_responses = [] # list of [index, response, length, answer]
+        bad_responses = []
+        for idx, (prompt, response, answer) in enumerate(zip(list_of_texts, request_output, extracted_answers)):
+            if answer:
+                good_responses.append((idx, response.outputs[0].text, list_of_lengths_and_messages[idx][0], answer))
             else:
-                bad_responses.append((idx, prompt, response.outputs[0].text + "\n</think>\n\n", list_of_lengths_and_messages[idx][0]))
+                #if "</think>" in response.outputs[0].text:
+                #bad_responses.append((idx, prompt, response.outputs[0].text + "\n\nThus, the final answer is\n\n", list_of_lengths_and_messages[idx][0]))
+                #bad_responses.append((idx, prompt, response.outputs[0].text + "\n\n**Final Answer**\n\n", list_of_lengths_and_messages[idx][0]))
+                #else:
+                if "7B" in args.model_name_or_path:
+                    bad_responses.append((idx, prompt, response.outputs[0].text + "\n</think>\n\n**Final Answer**\n\n", list_of_lengths_and_messages[idx][0]))
+                else:
+                    bad_responses.append((idx, prompt, response.outputs[0].text + "\n</think>\n\n", list_of_lengths_and_messages[idx][0]))
 
-    # Force to generate an answer
-    if bad_responses:
-        new_list_of_texts = [prompt + response for _, prompt, response, _ in bad_responses]
-        new_sampling_params = SamplingParams(
-            temperature=args.temperature,
-            min_p=0.01,
-            top_p=args.top_p,
-            skip_special_tokens=False,
-            max_tokens=1024,
-        )
-        new_request_output = llm.generate(
-            prompts=new_list_of_texts,
-            sampling_params=new_sampling_params,
-        )
-        new_request_output = sorted(new_request_output, key=lambda x: int(x.request_id))
-        new_list_of_lengths_and_messages = []
-        for i, (idx, prompt, prev_response, prev_len) in enumerate(bad_responses):
-            new_list_of_lengths_and_messages.append(
-                (
-                    prev_len + len(new_request_output[i].outputs[0].token_ids),
-                    list_of_messages[idx] + [{'role': 'assistant', 'content': prev_response + new_request_output[i].outputs[0].text}]
-                )
+        # Force to generate an answer
+        if bad_responses:
+            new_list_of_texts = [prompt + response for _, prompt, response, _ in bad_responses]
+            new_sampling_params = SamplingParams(
+                temperature=args.temperature,
+                min_p=0.01,
+                top_p=args.top_p,
+                skip_special_tokens=False,
+                max_tokens=1024,
             )
+            new_request_output = llm.generate(
+                prompts=new_list_of_texts,
+                sampling_params=new_sampling_params,
+            )
+            new_request_output = sorted(new_request_output, key=lambda x: int(x.request_id))
+            new_list_of_lengths_and_messages = []
+            for i, (idx, prompt, prev_response, prev_len) in enumerate(bad_responses):
+                new_list_of_lengths_and_messages.append(
+                    (
+                        prev_len + len(new_request_output[i].outputs[0].token_ids),
+                        list_of_messages[idx] + [{'role': 'assistant', 'content': prev_response + new_request_output[i].outputs[0].text}]
+                    )
+                )
 
-            #print("Original:", [prev_response[-200:]])
-            #print("New:", [new_request_output[i].outputs[0].text])
+                #print("Original:", [prev_response[-200:]])
+                #print("New:", [new_request_output[i].outputs[0].text])
 
-        #print("Before:", [length for length, _ in list_of_lengths_and_messages])
+            #print("Before:", [length for length, _ in list_of_lengths_and_messages])
 
-        # merge
-        for i, (idx, _, _, _) in enumerate(bad_responses):
-            list_of_lengths_and_messages[idx] = new_list_of_lengths_and_messages[i]
-        
-        #print("After:", [length for length, _ in list_of_lengths_and_messages])
+            # merge
+            for i, (idx, _, _, _) in enumerate(bad_responses):
+                list_of_lengths_and_messages[idx] = new_list_of_lengths_and_messages[i]
+            
+            #print("After:", [length for length, _ in list_of_lengths_and_messages])
 
     return list_of_lengths_and_messages
 
