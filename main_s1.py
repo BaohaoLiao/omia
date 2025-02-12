@@ -28,7 +28,7 @@ def parse_args():
     parser.add_argument("--num_speculative_tokens", default=5, type=int)
     parser.add_argument("--max_model_len", default=16384, type=int)
     parser.add_argument("--s1", action='store_true', default=False)
-    parser.add_argument("--use_math_varify", action='store_true', default=False)
+    parser.add_argument("--use_math_verify", action='store_true', default=False)
     args = parser.parse_args()
     args.top_p = (
         1 if args.temperature == 0 else args.top_p
@@ -158,7 +158,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
 
     if args.s1:
         # Obtain answer
-        extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages], use_math_verify=args.use_math_varify)
+        extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages], use_math_verify=args.use_math_verify)
         print("First predictions:", extracted_answers)
 
         good_responses = [] # list of [index, response, length, answer]
