@@ -241,7 +241,7 @@ SYSTEMP_PROMPTS = [
 ]
 
 
-def create_starter_messages(question, index, args):
+def create_starter_messages(question, args):
     options = []
     for _ in range(args.max_num_seqs):
         options.append(
@@ -254,7 +254,7 @@ def create_starter_messages(question, index, args):
 
 
 def predict_for_question(llm, tokenizer, question, args):
-    list_of_messages = [create_starter_messages(question, index, args) for index in range(args.max_num_seqs)]
+    list_of_messages = create_starter_messages(question, args)
     list_of_lengths_and_messages = batch_message_generate(llm, tokenizer, list_of_messages, args)
     extracted_answers = batch_message_filter([messages for _, messages in list_of_lengths_and_messages], use_math_verify=args.use_math_verify)
     lengths = [length for length, _ in list_of_lengths_and_messages]
