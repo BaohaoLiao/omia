@@ -234,6 +234,10 @@ SYSTEMP_PROMPTS = [
         "system": "Please carefully read the problem statement first to ensure you fully understand its meaning and key points. Then, solve the problem correctly and completely through deep reasoning. Finally, return the result modulo 1000 and enclose it in \\boxed{} like \"Atfer take the result modulo 1000, final anwer is \\boxed{180}.",
         "suffix": "",
     },
+    {
+        "system": "Solve the following math problem. Put your final answer within \\boxed{}.",
+        "suffix": "\nThe answer is a non-negative interger. If the answer is greater than 999, output answer modulo 1000 instead."
+    }
 ]
 
 
