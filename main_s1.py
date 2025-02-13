@@ -62,9 +62,9 @@ def extract_boxed_text(text, use_math_verify=False):
             )
         if answer_parsed:
             if len(answer_parsed) >=2:
-                return answer_parsed[1]
+                return str(answer_parsed[1])
             else:
-                return answer_parsed[0]
+                return str(answer_parsed[0])
         else:
             return ""
     else:
