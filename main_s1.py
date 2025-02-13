@@ -29,6 +29,7 @@ def parse_args():
     parser.add_argument("--max_model_len", default=16384, type=int)
     parser.add_argument("--s1", action='store_true', default=False)
     parser.add_argument("--use_math_verify", action='store_true', default=False)
+    parser.add_argument("--prompt_type", default=0, type=int)
     args = parser.parse_args()
     args.top_p = (
         1 if args.temperature == 0 else args.top_p
@@ -216,14 +217,17 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
 
     return list_of_lengths_and_messages
 
-
+SYSTEMP_PROMPTS = [
+    "You are a the most powerful math expert. Please solve the problems with deep resoning. You are careful and always recheck your conduction. You will never give answer directly until you have enough confidence. You should think step-by-step. Return final answer within \\boxed{}, after taking modulo 1000.",
+    "Please reason step by step, and put your final answer within \\boxed{}.",
+]
 
 def create_starter_messages(question, index, args):
     options = []
     for _ in range(args.max_num_seqs):
         options.append(
             [
-                {"role": "system", "content": "You are a the most powerful math expert. Please solve the problems with deep resoning. You are careful and always recheck your conduction. You will never give answer directly until you have enough confidence. You should think step-by-step. Return final answer within \\boxed{}, after taking modulo 1000."},
+                {"role": "system", "content": SYSTEMP_PROMPTS[args.prompt_type]},
                 {"role": "user", "content": question},
             ]
         )
@@ -355,7 +359,7 @@ def main(llm, tokenizer, args):
         "pass@1": sum(pass1s) / len(pass1s),
     }
 
-    out_file_prefix = f"seed{args.seed}_t{args.temperature}_n{args.max_num_seqs}_len{args.max_tokens_per_call}_{args.num_test_sample}"
+    out_file_prefix = f"prompt{args.prompt_type}_seed{args.seed}_t{args.temperature}_n{args.max_num_seqs}_len{args.max_tokens_per_call}_{args.num_test_sample}"
     out_file = f"./outputs/{args.output_dir}/{args.data_name}/{out_file_prefix}.jsonl"
     os.makedirs(f"./outputs/{args.output_dir}/{args.data_name}", exist_ok=True)
     save_jsonl(samples, out_file)
