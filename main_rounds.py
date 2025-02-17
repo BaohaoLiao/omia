@@ -214,12 +214,21 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
         )
         prompts = [prompt for _, prompt, _, _ in bad_responses]
         prev_responses = [prev_response for _, _, prev_response, _ in bad_responses]
+        
+        if num_rounds == 1:
+            last_chance = False
+            if len(counter) == 0:
+                last_chance = True
+            else:
+                if counter.most_common()[0][1]==1:
+                    last_chance = True
+
         round_responses = batch_message_generate_round(
             llm,
             prompts, 
             prev_responses, 
             sampling_params, 
-            last_chance = (num_rounds == 1 and len(counter)==0),
+            last_chance = last_chance,
         )
 
         new_list_of_lengths_and_messages = []
