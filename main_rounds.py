@@ -257,7 +257,7 @@ SYSTEMP_PROMPTS = [
     },
     {
         "system": "Please reason step by step, and put your final answer within \\boxed{}.",
-        "suffix": "",
+        "suffix": "\nThe answer is a non-negative interger. If the answer is greater than 999, output answer modulo 1000 instead.",
     },
     {
         "system": "You are a helpful and harmless math assistant. You should think step-by-step and you are good at reverse thinking to recheck your answer and fix all possible mistakes. After you get your final answer, take modulo 1000, and return the final answer within \\boxed{}.",
