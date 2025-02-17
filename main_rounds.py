@@ -416,7 +416,7 @@ def main(llm, tokenizer, args):
         "pass@1": sum(pass1s) / len(pass1s),
     }
 
-    out_file_prefix = f"prompt{args.prompt_type}_seed{args.seed}_t{args.temperature}_n{args.max_num_seqs}_len{args.max_tokens_per_call}_{args.num_test_sample}"
+    out_file_prefix = f"prompt{args.prompt_type}_thought{args.thought_type}_seed{args.seed}_t{args.temperature}_n{args.max_num_seqs}_len{args.max_tokens_per_call}_{args.num_test_sample}"
     out_file = f"./outputs/{args.output_dir}/{args.data_name}/{out_file_prefix}.jsonl"
     os.makedirs(f"./outputs/{args.output_dir}/{args.data_name}", exist_ok=True)
     save_jsonl(samples, out_file)
