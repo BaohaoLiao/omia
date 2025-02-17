@@ -214,9 +214,9 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
         )
         prompts = [prompt for _, prompt, _, _ in bad_responses]
         prev_responses = [prev_response for _, _, prev_response, _ in bad_responses]
-        
+
+        last_chance = False
         if num_rounds == 1:
-            last_chance = False
             if len(counter) == 0:
                 last_chance = True
             else:
