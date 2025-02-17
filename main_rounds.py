@@ -160,6 +160,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
         max_tokens=args.max_model_lens[0],
     )
     responses = batch_message_generate_round(
+        llm,
         full_prompts, 
         ["" for _ in full_prompts], 
         sampling_params, 
@@ -214,6 +215,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
         prompts = [prompt for _, prompt, _, _ in bad_responses]
         prev_responses = [prev_response for _, _, prev_response, _ in bad_responses]
         round_responses = batch_message_generate_round(
+            llm,
             prompts, 
             prev_responses, 
             sampling_params, 
