@@ -342,6 +342,7 @@ def main(llm, tokenizer, args):
     pass1s = []
     start_time = time.time()
     for index, row in df.iterrows():
+        q_star_time = time.time()
         print("-" * 50)
         print("id:", index)
 
@@ -375,6 +376,7 @@ def main(llm, tokenizer, args):
         print(f"Pass@1: {pass1s[-1]}")
         print(f"Overall Accuracy: {sum(preds)/len(preds)}")
         print(f"Overall Pass@1: {sum(pass1s)/len(pass1s)}")
+        print(f"Time used: {(time.time() - q_star_time) / 60} mins")
 
 
     time_use = time.time() - start_time
