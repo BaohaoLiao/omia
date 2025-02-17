@@ -129,7 +129,7 @@ def batch_message_filter(list_of_messages, use_math_verify):
 def batch_message_generate_round(llm, prompts, prev_responses, sampling_params, last_chance=False):
     full_texts = [prompt + prev_response for prompt, prev_response in zip(prompts, prev_responses)]
     if last_chance:
-        full_texts = [text + "\n</think>\n\n" for text in full_texts]
+        full_texts = [text + "\n</think>\n\n" if "</think>" not in text else text for text in full_texts]
 
     request_output = llm.generate(
         prompts=full_texts,
@@ -270,7 +270,11 @@ SYSTEMP_PROMPTS = [
     {
         "system": "Solve the following math problem. Put your final answer within \\boxed{}.",
         "suffix": "\nThe answer is a non-negative interger. If the answer is greater than 999, output answer modulo 1000 instead."
-    }
+    },
+    {
+        "system": "You are the most powerful math expert. Please solve the problems with deep resoning. You are careful and always recheck your conduction. You will never give answer directly until you have enough confidence. You should think step-by-step, and put the final answer within \\boxed{}.",
+        "suffix": "\nThe answer is a non-negative interger. If the answer is greater than 999, output answer modulo 1000 instead.",
+    },
 ]
 
 
