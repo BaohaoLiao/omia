@@ -30,6 +30,7 @@ def parse_args():
     parser.add_argument("--s1", action='store_true', default=False)
     parser.add_argument("--use_math_verify", action='store_true', default=False)
     parser.add_argument("--prompt_type", default=0, type=int)
+    parser.add_argument("--thought_type", default=0, type=int)
     parser.add_argument("--max_model_lens", nargs='+', type=int)
     parser.add_argument("--freq_threshold", type=int, default=3)
     parser.add_argument("--stop_word", type=str, default=None)
@@ -142,6 +143,12 @@ def batch_message_generate_round(llm, prompts, prev_responses, sampling_params, 
     return full_responses
 
 
+THOUGHT_PREFIX=[
+    "<think>\n",
+    "<think>\nAlright, we have a math problem.\nHmm, it seems that I was asked to use exact numbers.\nThis means I should not be approximating calculations.\nThis means I should use fractions instead of decimals.\nThis means I should avoid cumbersome calculations.\nAlso, I should not submit answers that I am not sure.\nI should not be submitting guesses.",
+]
+
+
 def batch_message_generate(llm, tokenizer, list_of_messages, args):
     num_rounds = len(args.max_model_lens) - 1
 
@@ -151,7 +158,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
             conversation=messages,
             tokenize=False,
             add_generation_prompt=True
-        ) + "<think>\n"
+        ) + THOUGHT_PREFIX[args.thought_type]
         for messages in list_of_messages
     ]    
     sampling_params = SamplingParams(
