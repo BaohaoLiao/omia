@@ -179,7 +179,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
 
     # Other rounds
     while num_rounds > 0:
-        extracted_answers = batch_message_filter([messages for _, messages, _ in list_of_lengths_and_messages])
+        extracted_answers = batch_message_filter([messages for _, messages, _ in list_of_lengths_and_messages], args.use_math_verify)
         print(f"Round {len(args.max_model_lens)-num_rounds}/{len(args.max_model_lens)} predictions: {extracted_answers}")
 
         check_answers = [ans for ans in extracted_answers if ans]
