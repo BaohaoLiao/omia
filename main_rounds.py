@@ -32,6 +32,7 @@ def parse_args():
     parser.add_argument("--prompt_type", default=0, type=int)
     parser.add_argument("--max_model_lens", nargs='+', type=int)
     parser.add_argument("--freq_threshold", type=int, default=3)
+    parser.add_argument("--stop_words", type=str, default=None)
     args = parser.parse_args()
     args.top_p = (
         1 if args.temperature == 0 else args.top_p
@@ -158,6 +159,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
         min_p=0.01,
         skip_special_tokens=False,    
         max_tokens=args.max_model_lens[0],
+        stop=[args.stop_words] if args.stop_words is not None else None,
     )
     responses = batch_message_generate_round(
         llm,
@@ -211,6 +213,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
             min_p=0.01,
             skip_special_tokens=False,    
             max_tokens=args.max_model_lens[len(args.max_model_lens) - num_rounds],
+            stop=[args.stop_words] if args.stop_words is not None else None,
         )
         prompts = [prompt for _, prompt, _, _ in bad_responses]
         prev_responses = [prev_response for _, _, prev_response, _ in bad_responses]
