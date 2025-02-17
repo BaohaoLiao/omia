@@ -275,6 +275,10 @@ SYSTEMP_PROMPTS = [
         "system": "You are the most powerful math expert. Please solve the problems with deep resoning. You are careful and always recheck your conduction. You will never give answer directly until you have enough confidence. You should think step-by-step, and put the final answer within \\boxed{}.",
         "suffix": "\nThe answer is a non-negative interger. If the answer is greater than 999, output answer modulo 1000 instead.",
     },
+    {
+        "system": "Please reason step by step, and put your final answer within \\boxed{}.",
+        "suffix": "",
+    },
 ]
 
 
