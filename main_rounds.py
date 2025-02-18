@@ -146,6 +146,7 @@ def batch_message_generate_round(llm, prompts, prev_responses, sampling_params, 
 THOUGHT_PREFIX=[
     "<think>\n",
     "<think>\nAlright, we have a math problem.\nHmm, it seems that I was asked to use exact numbers.\nThis means I should not be approximating calculations.\nThis means I should use fractions instead of decimals.\nThis means I should avoid cumbersome calculations.\nAlso, I should not submit answers that I am not sure.\nI should not be submitting guesses.",
+    "<think>\nAlright, we have a math problem.\n\nHmm, it seems that I was asked to use exact numbers.\n\nThis means I should not be approximating calculations.\n\nThis means I should use fractions instead of decimals.\n\nThis means I should avoid cumbersome calculations.\n\nAlso, I should not submit answers that I am not sure.\n\nI should not be submitting guesses.",
 ]
 
 
