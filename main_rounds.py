@@ -426,4 +426,5 @@ def main(llm, tokenizer, args):
 
 if __name__ == "__main__":
     args = parse_args()
+    print("Arguments:", args)
     setup(args)
