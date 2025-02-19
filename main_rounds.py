@@ -148,8 +148,8 @@ def batch_message_generate_round(llm, prompts, prev_responses, sampling_params, 
 
 THOUGHT_PREFIX=[
     "<think>\n",
-    "<think>\nAlright, we have a math problem.\nHmm, it seems that I was asked to use exact numbers.\nThis means I should not be approximating calculations.\nThis means I should use fractions instead of decimals.\nThis means I should avoid cumbersome calculations.\nAlso, I should not submit answers that I am not sure.\nI should not be submitting guesses.",
     "<think>\nAlright, we have a math problem.\n\nHmm, it seems that I was asked to use exact numbers.\n\nThis means I should not be approximating calculations.\n\nThis means I should use fractions instead of decimals.\n\nThis means I should avoid cumbersome calculations.\n\nAlso, I should not submit answers that I am not sure.\n\nI should not be submitting guesses.",
+    "<think>\nAlright, we have a math problem.\n\nHmm, it seems that I was asked to solve like a human. What does that mean? I guess I have to think through the problem step by step, similar to how a person would approach it.\n\nThink deeper. Humans work with easier numbers. They not do insane arithmetic. It means that when I have insane calculations to do, I am likely on the wrong track.\n\nWhat else? This also means I should not be working with decimal places. I should avoid decimals.\n\nAlso, I should not submit answers that I am not sure.",
 ]
 
 
@@ -266,7 +266,7 @@ def batch_message_generate(llm, tokenizer, list_of_messages, args):
 
 SYSTEMP_PROMPTS = [
     {
-        "system": "You are a the most powerful math expert. Please solve the problems with deep resoning. You are careful and always recheck your conduction. You will never give answer directly until you have enough confidence. You should think step-by-step. Return final answer within \\boxed{}, after taking modulo 1000.",
+        "system": "Solve the math problem from the user. Only work with exact numbers. Only submit an answer if you are sure. After you get your final answer, take modulo 1000, and return the final answer within \\boxed{}.",
         "suffix": "",
     },
     {
@@ -293,6 +293,10 @@ SYSTEMP_PROMPTS = [
         "system": "Please reason step by step, and put your final answer within \\boxed{}.",
         "suffix": "",
     },
+    {
+        "system": "Solve the math problem from the user, similar to how a human would (first think how would you solve like a human). Only submit an answer if you are sure. After you get your final answer, take modulo 1000, and return the final answer within \\boxed{}.",
+        "suffix": "",
+    }
 ]
 
 
