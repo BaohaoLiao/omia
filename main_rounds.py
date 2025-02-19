@@ -116,7 +116,7 @@ def select_answer(answers, lengths):
         try:
             avg_length = sum([lengths[i] for i in indices]) / len(indices)
         except:
-            print(answers, freq_dict, valid_indices, indices)
+            print(answers, lengths, freq_dict, valid_indices, indices)
         avg_lengths[ans] = avg_length
     
     # Return the answer with minimum average length
