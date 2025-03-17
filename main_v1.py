@@ -308,7 +308,7 @@ def setup(args):
         tensor_parallel_size=len(available_gpus),
         gpu_memory_utilization=0.95,
         seed=args.seed,
-        enable_prefix_caching=True,
+        enable_prefix_caching=False,
     )
     tokenizer = llm.get_tokenizer()
     main(llm, tokenizer, args)
