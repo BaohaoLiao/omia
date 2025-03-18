@@ -206,7 +206,11 @@ def batch_message_generate(llm, prompts, args):
 def create_starter_messages(question, args, tokenizer):
     if args.no_system_prompt:
         messages = [
-                    {"role": "user", "content": question + SYSTEM_PROMPTS[args.prompt_type]["suffix"]},
+                    {
+                        "role": "user", 
+                        "content": SYSTEM_PROMPTS[args.prompt_type]["system"] + "\n\nQuestion: " + 
+                            question + SYSTEM_PROMPTS[args.prompt_type]["suffix"]
+                    },
                 ]
     else:
         messages = [
