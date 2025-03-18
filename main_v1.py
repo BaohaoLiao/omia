@@ -68,6 +68,16 @@ SYSTEM_PROMPTS = {
         "suffix": "",
         "thought_prefix": "<think>\n",
     },
+    11: {
+        "system": "Solve the math problem from the user. Only work with exact numbers. Only submit an answer if you are sure. After you get your final answer, take modulo 1000, and return the final answer within \\boxed{}.",
+        "suffix": "",
+        "thought_prefix": "<think>\n",
+    },
+    12: {
+        "system":  "Solve the math problem from the user, similar to how a human would (first think how would you solve like a human). Only submit an answer if you are sure. After you get your final answer, take modulo 1000, and return the final answer within \\boxed{}.",
+        "suffix": "",
+        "thought_prefix": "<think>\n",
+    },
 }
 
 
