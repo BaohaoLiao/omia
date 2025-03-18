@@ -86,6 +86,7 @@ def parse_args():
     parser.add_argument("--max_num_seqs", default=16, type=int)
     parser.add_argument("--prompt_type", default=0, type=int)
     parser.add_argument("--sample_idx", default="-1", type=str)
+    parser.add_argument("--no_system_prompt", default=False, action='store_true')
     args = parser.parse_args()
     # top_p must be 1 when using greedy sampling (vllm)
     args.top_p = (1 if args.temperature == 0 else args.top_p)  
@@ -203,10 +204,15 @@ def batch_message_generate(llm, prompts, args):
 
 
 def create_starter_messages(question, args, tokenizer):
-    messages = [
-                {"role": "system", "content": SYSTEM_PROMPTS[args.prompt_type]["system"]},
-                {"role": "user", "content": question + SYSTEM_PROMPTS[args.prompt_type]["suffix"]},
-            ]
+    if args.no_system_prompt:
+        messages = [
+                    {"role": "user", "content": question + SYSTEM_PROMPTS[args.prompt_type]["suffix"]},
+                ]
+    else:
+        messages = [
+                    {"role": "system", "content": SYSTEM_PROMPTS[args.prompt_type]["system"]},
+                    {"role": "user", "content": question + SYSTEM_PROMPTS[args.prompt_type]["suffix"]},
+                ]
     prompt = tokenizer.apply_chat_template(
                 conversation=messages,
                 tokenize=False,
@@ -290,7 +296,7 @@ def main(llm, tokenizer, args):
         "pass@1": sum(pass1s) / len(pass1s),
     }
 
-    out_file_prefix = f"prompt{args.prompt_type}_seed{args.seed}_t{args.temperature}topp{args.top_p}minp{args.min_p}_n{args.max_num_seqs}_len{args.max_tokens_per_call}_sample{args.sample_idx}"
+    out_file_prefix = f"prompt{args.prompt_type}system{args.no_system_prompt}_seed{args.seed}_t{args.temperature}topp{args.top_p}minp{args.min_p}_n{args.max_num_seqs}_len{args.max_tokens_per_call}_sample{args.sample_idx}"
     out_file = f"./outputs/{args.output_dir}/{args.data_name}/{out_file_prefix}.jsonl"
     os.makedirs(f"./outputs/{args.output_dir}/{args.data_name}", exist_ok=True)
     save_jsonl(samples, out_file)
