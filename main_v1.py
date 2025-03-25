@@ -278,8 +278,8 @@ def main(llm, tokenizer, args):
             idx = row["id"]
 
         responses, extracted_answers, lengths, answer, length = predict_for_question(llm, tokenizer, question, args)
-        preds.append(int(float(answer)) == int(float(gt)))
-        pass1s.append(sum([int(float(gt)) == int(float(ans)) for ans in extracted_answers])/len(extracted_answers))
+        preds.append(str(answer) == str(gt))
+        pass1s.append(sum([str(gt) == str(ans) for ans in extracted_answers])/len(extracted_answers))
 
         samples.append({
             "id": idx,
