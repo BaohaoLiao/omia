@@ -202,7 +202,7 @@ def batch_message_generate(llm, prompts, args):
         top_p=args.top_p,
         skip_special_tokens=False,
         max_tokens=args.max_tokens_per_call,
-        #seed=777,
+        stop=["</think>"],
     )
     request_outputs = llm.generate(
         prompts=prompts,
