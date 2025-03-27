@@ -29,7 +29,7 @@ SYSTEM_PROMPTS = {
         "thought_prefix": "<think>\n",
     },
     3: {
-        "system": "Please carefully read the problem statement first to ensure you fully understand its meaning and key points. Then, solve the problem correctly and completely through deep reasoning. Finally, return the result modulo 1000 and enclose it in \\boxed{} like \"Atfer take the result modulo 1000, final anwer is \\boxed{180}.",
+        "system": "Please carefully read the problem statement first to ensure you fully understand its meaning and key points. Then, solve the problem correctly and completely through deep reasoning. Finally, return the result modulo 1000 and enclose it in \\boxed{} like \"Atfer take the result modulo 1000, final anwer is \\boxed{180}\".",
         "suffix": "",
         "thought_prefix": "<think>\n",
     },
